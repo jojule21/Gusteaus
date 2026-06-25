@@ -7,7 +7,7 @@ function Header() {
         <img
           src={logo}
           alt="Gusteau's Logo"
-          className="w-[40%] sm:w-[30%] md:w-[20%] max-w-[300px] min-w-[80px] h-auto"
+          className="w-[20%] sm:w-[30%] md:w-[20%] max-w-[300px] min-w-[80px] h-auto"
         />
       </div>
     </header>
