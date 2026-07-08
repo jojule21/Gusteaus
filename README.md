@@ -1,19 +1,6 @@
 # Gusteau's Restaurant - CSCI WebDev HW (Full Stack)
 
-Extension of my HW3 React app. Added a Node.js + Express + MongoDB backend.
-The menu, cart, and orders all live in MongoDB now instead of being hardcoded
-in the frontend / localStorage.
-
-## What changed from HW3
-
-- **Menu**: items are stored in a `menuitems` collection in MongoDB. The Menu
-  page fetches them with `GET /api/menu` instead of importing `menuData.js`.
-- **Cart**: every browser gets a random cartId (kept in localStorage). Every
-  add/remove/quantity change is saved to a `carts` collection, so the cart
-  survives refreshes and shows up in the DB in real time.
-- **Orders**: Checkout asks for your name and `POST`s the order to
-  `/api/orders`. Orders are saved with items, total (calculated server-side),
-  a status field, and a timestamp.
+A website created for CSCI 39548 to implement and understand full-stack website development 
 
 ## API endpoints
 
