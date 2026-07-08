@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import Header from './components/Header.jsx'
@@ -12,19 +12,39 @@ import About from './pages/About.jsx'
 import Gallery from './pages/Gallery.jsx'
 import Contact from './pages/Contact.jsx'
 
+import { getCartId, fetchCart, saveCart, clearCartOnServer, placeOrder } from './api.js'
+
 function App() {
-  // the cart, loaded from localStorage so it survives a page refresh
-  const [cartItems, setCartItems] = useState(function () {
-    const saved = localStorage.getItem("gusteauCart")
-    return saved ? JSON.parse(saved) : []
-  })
+  // the cart now lives in MongoDB - each browser has its own cartId
+  const [cartItems, setCartItems] = useState([])
 
   // whether the cart panel is open
   const [cartOpen, setCartOpen] = useState(false)
 
-  // save the cart to localStorage whenever it changes
+  // don't save the cart back to the server until we've loaded it once,
+  // otherwise the empty starting cart would overwrite the saved one
+  const loaded = useRef(false)
+
+  const cartId = getCartId()
+
+  // load this browser's cart from the database on startup
   useEffect(() => {
-    localStorage.setItem("gusteauCart", JSON.stringify(cartItems))
+    fetchCart(cartId)
+      .then((cart) => {
+        setCartItems(cart.items || [])
+        loaded.current = true
+      })
+      .catch(() => {
+        // if the server is down just start with an empty cart
+        loaded.current = true
+      })
+  }, [])
+
+  // save the cart to the database whenever it changes
+  useEffect(() => {
+    if (loaded.current) {
+      saveCart(cartId, cartItems)
+    }
   }, [cartItems])
 
   // add an item (or bump its quantity if it is already in the cart)
@@ -65,9 +85,32 @@ function App() {
     setCartItems(cartItems.filter((item) => item.name !== name))
   }
 
-  // empty the cart
+  // empty the cart (locally and in the database)
   function clearCart() {
     setCartItems([])
+    clearCartOnServer(cartId)
+  }
+
+  // checkout: ask for a name, send the order to the backend,
+  // then clear the cart once the order is saved
+  async function checkout() {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!")
+      return
+    }
+    const name = prompt("Name for the order:")
+    if (name === null) {
+      return // they hit cancel
+    }
+    try {
+      const order = await placeOrder(name || "Guest", cartItems)
+      alert("Thank you! Your order has been placed.\nOrder #" + order._id)
+      setCartItems([])
+      clearCartOnServer(cartId)
+      setCartOpen(false)
+    } catch (err) {
+      alert("Sorry, something went wrong placing your order. Please try again.")
+    }
   }
 
   // total number of items, for the badge in the navbar
@@ -98,6 +141,7 @@ function App() {
         onChangeQty={changeQty}
         onRemove={removeFromCart}
         onClear={clearCart}
+        onCheckout={checkout}
       />
     </div>
   )

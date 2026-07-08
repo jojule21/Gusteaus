@@ -1,12 +1,8 @@
-function Cart({ cartItems, isOpen, onClose, onChangeQty, onRemove, onClear }) {
+function Cart({ cartItems, isOpen, onClose, onChangeQty, onRemove, onClear, onCheckout }) {
   // work out the total price of everything in the cart
   let total = 0
   for (let i = 0; i < cartItems.length; i++) {
     total += cartItems[i].price * cartItems[i].qty
-  }
-
-  function handleCheckout() {
-    alert("Thank you! Your order has been placed.")
   }
 
   return (
@@ -101,7 +97,7 @@ function Cart({ cartItems, isOpen, onClose, onChangeQty, onRemove, onClear }) {
             </button>
             <button
               className="flex-1 p-3 bg-[#103852] text-[#B07C4C] border-2 border-[#B07C4C] text-[15px] cursor-pointer hover:bg-[#B07C4C] hover:text-white"
-              onClick={handleCheckout}
+              onClick={onCheckout}
             >
               Checkout
             </button>
