@@ -1,4 +1,4 @@
-# Gusteau's Restaurant - HW4 (Full Stack)
+# Gusteau's Restaurant - CSCI WebDev HW (Full Stack)
 
 Extension of my HW3 React app. Added a Node.js + Express + MongoDB backend.
 The menu, cart, and orders all live in MongoDB now instead of being hardcoded
